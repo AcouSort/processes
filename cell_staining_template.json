@@ -85,7 +85,7 @@
   },
   {
     "Command": "pump",
-    "Arg": "aspirate 10 10 Staining_solution"
+    "Arg": "aspirate 10 10"
   },
   {
     "Command": "goto",
@@ -93,7 +93,7 @@
   },
   {
     "Command": "pump",
-    "Arg": "aspirate 8 10 Flow_buffer"
+    "Arg": "aspirate 8 10"
   },
   {
     "Command": "repeat",
