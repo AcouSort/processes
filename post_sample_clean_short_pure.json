@@ -1,0 +1,22 @@
+[
+  {
+    "Command": "pump",
+    "Arg": "empty_to waste"
+  },
+  {
+    "Command": "goto",
+    "Arg": "waste"
+  },
+  {
+    "Command": "pump",
+    "Arg": "aspirate_from buffer 250 5000"
+  },
+  {
+    "Command": "pump",
+    "Arg": "dispence_to chip 200 1000"
+  },
+  {
+    "Command": "goto",
+    "Arg": "home"
+  }
+]
