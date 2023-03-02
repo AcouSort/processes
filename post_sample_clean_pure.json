@@ -13,7 +13,7 @@
   },
   {
     "Command": "pump",
-    "Arg": "dispence_to chip 250 1000"
+    "Arg": "dispence_to chip 200 1000"
   },
   {
     "Command": "pump",
@@ -25,7 +25,19 @@
   },
   {
     "Command": "pump",
-    "Arg": "dispence_to chip 250 1000"
+    "Arg": "dispence_to chip 200 1000"
+  },
+  {
+    "Command": "pump",
+    "Arg": "empty_to waste"
+  },
+  {
+    "Command": "pump",
+    "Arg": "fill_from sl"
+  },
+  {
+    "Command": "pump",
+    "Arg": "dispence_to chip 200 1000"
   },
   {
     "Command": "pump",
@@ -37,7 +49,7 @@
   },
   {
     "Command": "pump",
-    "Arg": "dispence_to chip 250 1000"
+    "Arg": "dispence_to chip 200 1000"
   },
   {
     "Command": "pump",
@@ -49,7 +61,19 @@
   },
   {
     "Command": "pump",
-    "Arg": "dispence_to chip 250 1000"
+    "Arg": "dispence_to chip 200 1000"
+  },
+  {
+    "Command": "pump",
+    "Arg": "empty_to waste"
+  },
+  {
+    "Command": "pump",
+    "Arg": "fill_from rl"
+  },
+  {
+    "Command": "pump",
+    "Arg": "dispence_to chip 200 1000"
   },
   {
     "Command": "pump",
@@ -61,7 +85,7 @@
   },
   {
     "Command": "pump",
-    "Arg": "dispence_to chip 250 1000"
+    "Arg": "dispence_to chip 200 1000"
   },
   {
     "Command": "pump",
@@ -73,7 +97,19 @@
   },
   {
     "Command": "pump",
-    "Arg": "dispence_to chip 250 1000"
+    "Arg": "dispence_to chip 200 1000"
+  },
+  {
+    "Command": "pump",
+    "Arg": "empty_to waste"
+  },
+  {
+    "Command": "pump",
+    "Arg": "fill_from buffer"
+  },
+  {
+    "Command": "pump",
+    "Arg": "dispence_to chip 200 1000"
   },
   {
     "Command": "pump",
