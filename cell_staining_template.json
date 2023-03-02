@@ -1,0 +1,186 @@
+[
+  {
+    "Command": "us",
+    "Arg": "track 4100 10"
+  },
+  {
+    "Command": "goto",
+    "Arg": "DEF sample"
+  },
+  {
+    "Command": "pump",
+    "Arg": "set_valve chip"
+  },
+  {
+    "Command": "pump",
+    "Arg": "aspirate VAR 60"
+  },
+  {
+    "Command": "goto",
+    "Arg": "DEF buffer"
+  },
+  {
+    "Command": "pump",
+    "Arg": "aspirate 30 60 buffer"
+  },
+  {
+    "Command": "camera",
+    "Arg": "snapshot sample_aspiration"
+  },
+  {
+    "Command": "pump",
+    "Arg": "empty_to waste"
+  },
+  {
+    "Command": "pump",
+    "Arg": "aspirate_from buffer 200 5000"
+  },
+  {
+    "Command": "pump",
+    "Arg": "empty_to waste"
+  },
+  {
+    "Command": "pump",
+    "Arg": "aspirate_from buffer 200 5000"
+  },
+  {
+    "Command": "pump",
+    "Arg": "empty_to waste"
+  },
+  {
+    "Command": "pump",
+    "Arg": "aspirate_from buffer 200 5000"
+  },
+  {
+    "Command": "pump",
+    "Arg": "empty_to waste"
+  },
+  {
+    "Command": "pump",
+    "Arg": "aspirate_from buffer 50 5000"
+  },
+  {
+    "Command": "pump",
+    "Arg": "aspirate 150 5000"
+  },
+  {
+    "Command": "pump",
+    "Arg": "set_valve chip"
+  },
+  {
+    "Command": "goto",
+    "Arg": "waste"
+  },
+  {
+    "Command": "pump",
+    "Arg": "dispence 150 60 wash"
+  },
+  {
+    "Command": "camera",
+    "Arg": "snapshot washed_sample"
+  },
+  {
+    "Command": "goto",
+    "Arg": "DEF Staining_solution"
+  },
+  {
+    "Command": "pump",
+    "Arg": "aspirate 10 10 Staining_solution"
+  },
+  {
+    "Command": "goto",
+    "Arg": "DEF Flow_buffer"
+  },
+  {
+    "Command": "pump",
+    "Arg": "aspirate 8 10 Flow_buffer"
+  },
+  {
+    "Command": "repeat",
+    "Arg": "4"
+  },
+  {
+    "Command": "pump",
+    "Arg": "aspirate 6 10 oscillating_flow"
+  },
+  {
+    "Command": "pump",
+    "Arg": "dispence 6 10 oscillating_flow"
+  },
+  {
+    "Command": "repeat",
+    "Arg": "end"
+  },
+  {
+    "Command": "goto",
+    "Arg": "DEF final_wash"
+  },
+  {
+    "Command": "goto",
+    "Arg": "waste"
+  },
+  {
+    "Command": "pump",
+    "Arg": "empty_to waste"
+  },
+  {
+    "Command": "pump",
+    "Arg": "aspirate_from buffer 200 5000"
+  },
+  {
+    "Command": "pump",
+    "Arg": "empty_to waste"
+  },
+  {
+    "Command": "pump",
+    "Arg": "aspirate_from buffer 200 5000"
+  },
+  {
+    "Command": "pump",
+    "Arg": "empty_to waste"
+  },
+  {
+    "Command": "pump",
+    "Arg": "aspirate_from buffer 200 5000"
+  },
+  {
+    "Command": "pump",
+    "Arg": "empty_to waste"
+  },
+  {
+    "Command": "pump",
+    "Arg": "aspirate_from buffer 50 5000"
+  },
+  {
+    "Command": "pump",
+    "Arg": "aspirate_from buffer VAR 5000 final_wash"
+  },
+  {
+    "Command": "pump",
+    "Arg": "dispence 100 50 final_wash"
+  },
+  {
+    "Command": "camera",
+    "Arg": "snapshot final_washed_sample"
+  },
+  {
+    "Command": "goto",
+    "Arg": "DEF output"
+  },
+  {
+    "Command": "us",
+    "Arg": "constant 4100 0"
+  },
+  {
+    "Command": "pump",
+    "Arg": "dispence VAR 500 output"
+  },
+  {
+    "Command": "camera",
+    "Arg": "snapshot dispensed_sample"
+  },
+  {
+    "Command": "goto",
+    "Arg": "home"
+  }
+]
