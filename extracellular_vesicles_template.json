@@ -1,0 +1,126 @@
+[
+  {
+    "Command": "stir",
+    "Arg": "on"
+  },
+  {
+    "Command": "wait",
+    "Arg": "10000"
+  },
+  {
+    "Command": "stir",
+    "Arg": "off"
+  },
+  {
+    "Command": "us",
+    "Arg": "track 4100 10"
+  },
+  {
+    "Command": "goto",
+    "Arg": "seed"
+  },
+  {
+    "Command": "pump",
+    "Arg": "aspirate_from chip VAR 50"
+  },
+  {
+    "Command": "goto",
+    "Arg": "waste"
+  },
+  {
+    "Command": "pump",
+    "Arg": "aspirate_from buffer 50 5000"
+  },
+  {
+    "Command": "pump",
+    "Arg": "dispence_to chip 50 50"
+  },
+  {
+    "Command": "camera",
+    "Arg": "snapshot seed_particles"
+  },
+  {
+    "Command": "goto",
+    "Arg": "DEF sample"
+  },
+  {
+    "Command": "pump",
+    "Arg": "aspirate VAR VAR"
+  },
+  {
+    "Command": "goto",
+    "Arg": "DEF buffer"
+  },
+  {
+    "Command": "pump",
+    "Arg": "aspirate VAR VAR"
+  },
+  {
+    "Command": "camera",
+    "Arg": "snapshot sample_aspiration"
+  },
+  {
+    "Command": "pump",
+    "Arg": "empty_to waste"
+  },
+  {
+    "Command": "pump",
+    "Arg": "aspirate_from buffer 200 5000"
+  },
+  {
+    "Command": "pump",
+    "Arg": "empty_to waste"
+  },
+  {
+    "Command": "pump",
+    "Arg": "aspirate_from buffer 200 5000"
+  },
+  {
+    "Command": "pump",
+    "Arg": "empty_to waste"
+  },
+  {
+    "Command": "pump",
+    "Arg": "aspirate_from buffer 50 5000"
+  },
+  {
+    "Command": "pump",
+    "Arg": "aspirate VAR 5000 wash"
+  },
+  {
+    "Command": "pump",
+    "Arg": "set_valve chip"
+  },
+  {
+    "Command": "goto",
+    "Arg": "waste"
+  },
+  {
+    "Command": "pump",
+    "Arg": "dispence VAR VAR wash"
+  },
+  {
+    "Command": "camera",
+    "Arg": "snapshot washed_sample"
+  },
+  {
+    "Command": "goto",
+    "Arg": "DEF output"
+  },
+  {
+    "Command": "us",
+    "Arg": "constant 4100 0"
+  },
+  {
+    "Command": "pump",
+    "Arg": "dispence VAR 50"
+  },
+  {
+    "Command": "camera",
+    "Arg": "snapshot dispensed_sample"
+  },
+  {
+    "Command": "goto",
+    "Arg": "home"
+  }
+]
