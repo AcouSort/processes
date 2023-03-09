@@ -81,7 +81,7 @@
   },
   {
     "Command": "goto",
-    "Arg": "DEF Staining_solution"
+    "Arg": "DEF staining_solution"
   },
   {
     "Command": "pump",
@@ -89,7 +89,7 @@
   },
   {
     "Command": "goto",
-    "Arg": "DEF Flow_buffer"
+    "Arg": "DEF flow_buffer"
   },
   {
     "Command": "pump",
@@ -153,7 +153,7 @@
   },
   {
     "Command": "pump",
-    "Arg": "aspirate_from buffer VAR 5000 final_wash"
+    "Arg": "aspirate VAR 5000 final_wash"
   },
   {
     "Command": "pump",
