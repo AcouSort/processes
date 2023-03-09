@@ -173,7 +173,7 @@
   },
   {
     "Command": "pump",
-    "Arg": "dispence VAR 500 output"
+    "Arg": "dispence VAR 500"
   },
   {
     "Command": "camera",
