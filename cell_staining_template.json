@@ -113,10 +113,6 @@
   },
   {
     "Command": "goto",
-    "Arg": "DEF final_wash"
-  },
-  {
-    "Command": "goto",
     "Arg": "waste"
   },
   {
