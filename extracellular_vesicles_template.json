@@ -21,7 +21,7 @@
   },
   {
     "Command": "pump",
-    "Arg": "aspirate_from chip VAR 50"
+    "Arg": "aspirate_from chip VAR 50 seed"
   },
   {
     "Command": "goto",
