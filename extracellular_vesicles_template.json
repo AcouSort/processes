@@ -5,7 +5,7 @@
   },
   {
     "Command": "wait",
-    "Arg": "10000"
+    "Arg": "10"
   },
   {
     "Command": "stir",
