@@ -61,7 +61,7 @@
   },
   {
     "Command": "pump",
-    "Arg": "dispence 150 60 wash"
+    "Arg": "dispense 150 60 wash"
   },
   {
     "Command": "camera",
@@ -77,7 +77,7 @@
   },
   {
     "Command": "pump",
-    "Arg": "dispence VAR 500"
+    "Arg": "dispense VAR 500"
   },
   {
     "Command": "camera",

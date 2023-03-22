@@ -13,7 +13,7 @@
   },
   {
     "Command": "pump",
-    "Arg": "dispence_to chip 200 1000"
+    "Arg": "dispense_to chip 200 1000"
   },
   {
     "Command": "goto",

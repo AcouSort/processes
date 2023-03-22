@@ -33,7 +33,7 @@
   },
   {
     "Command": "pump",
-    "Arg": "dispence_to chip 50 50"
+    "Arg": "dispense_to chip 50 50"
   },
   {
     "Command": "camera",
@@ -97,7 +97,7 @@
   },
   {
     "Command": "pump",
-    "Arg": "dispence VAR VAR wash"
+    "Arg": "dispense VAR VAR wash"
   },
   {
     "Command": "camera",
@@ -113,7 +113,7 @@
   },
   {
     "Command": "pump",
-    "Arg": "dispence VAR 50"
+    "Arg": "dispense VAR 50"
   },
   {
     "Command": "camera",

@@ -73,7 +73,7 @@
   },
   {
     "Command": "pump",
-    "Arg": "dispence 150 60 wash"
+    "Arg": "dispense 150 60 wash"
   },
   {
     "Command": "camera",
@@ -105,7 +105,7 @@
   },
   {
     "Command": "pump",
-    "Arg": "dispence 6 10 oscillating_flow"
+    "Arg": "dispense 6 10 oscillating_flow"
   },
   {
     "Command": "repeat",
@@ -153,7 +153,7 @@
   },
   {
     "Command": "pump",
-    "Arg": "dispence 100 50 final_wash"
+    "Arg": "dispense 100 50 final_wash"
   },
   {
     "Command": "camera",
@@ -169,7 +169,7 @@
   },
   {
     "Command": "pump",
-    "Arg": "dispence VAR 500"
+    "Arg": "dispense VAR 500"
   },
   {
     "Command": "camera",
