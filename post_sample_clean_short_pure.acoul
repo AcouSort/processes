@@ -1,0 +1,5 @@
+empty_to("waste")
+goto("waste")
+aspirate_from("buffer", 250, 5000)
+dispense_to("chip", 200, 1000)
+goto("home")

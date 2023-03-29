@@ -1,10 +1,11 @@
 well sample(well = var, volume = var, velocity = 60)
+well buffer(well = var, volume = 30, velocity = 60)
 well output(well = var, volume = var, velocity = 500)
 
 us("track", 4100, 10)
 goto(sample.well)
 aspirate(sample.volume, sample.velocity)
-goto("buffer")
+goto(buffer.well)
 aspirate(30, 60)
 snapshot("sample_aspiration")
 empty_to("waste")
