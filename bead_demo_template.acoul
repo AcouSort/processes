@@ -1,8 +1,8 @@
-well sample(well = var, volume = 25, velocity = 40)
-well buffer(well = var, volume = 30, velocity = 40)
-well output(well = var, volume = 50, velocity = 500)
+well sample(well, volume! = 25, velocity! = 40)
+well buffer(well, volume! = 30, velocity! = 40)
+well output(well, volume! = 50, velocity! = 500)
 
-expose int seed_volume
+expose int seed_volume = 50
 
 stir("on")
 wait(10)
@@ -25,7 +25,7 @@ empty_to("waste")
 aspirate_from("buffer", 200, 5000)
 empty_to("waste")
 aspirate_from("buffer", 50, 5000)
-aspirate(wash_volume, 5000)
+aspirate(50, 5000)
 set_valve("chip")
 goto("waste")
 dispense(10, 40)

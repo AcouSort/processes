@@ -1,10 +1,10 @@
-well sample(well = var, volume = var, velocity = var)
-well buffer(well = var, volume = var, velocity = var)
-well output(well = var, volume = var, velocity = 50)
+well sample(well, volume = 50, velocity = 50)
+well buffer(well, volume = 50, velocity = 50)
+well output(well, volume = 50, velocity! = 50)
 
-expose int seed_volume
-expose int wash_volume
-expose int wash_velocity
+expose int seed_volume = 50
+expose int wash_volume = 50
+expose int wash_velocity = 50
 
 stir("on")
 wait(10)

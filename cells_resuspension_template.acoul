@@ -1,9 +1,9 @@
-expose bool resuspension
+expose bool resuspension = true
 
-well sample(well = var, volume = var, velocity = 60)
-well buffer(well = var, volume = 30, velocity = 60)
-well output(well = var, volume = var, velocity = 500)
-well wash(well = null, volume = 35, velocity=100)
+well sample(well, volume = 50, velocity! = 60)
+well buffer(well, volume! = 30, velocity! = 60)
+well output(well, volume = 50, velocity! = 500)
+well wash(volume! = 35, velocity! = 100)
 
 def buffer_clean_volume = 200
 
