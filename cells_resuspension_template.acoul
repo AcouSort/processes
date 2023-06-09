@@ -30,7 +30,7 @@ snapshot("washed_sample")
 goto(output.well)
 set_valve("buffer")
 aspirate(output.volume + output.volume, 5000)
-us("constant", 4100, 0)
+us("constant", 0, 0)
 dispense_to("chip", output.volume, 500)
 snapshot("dispensed_sample")
 
