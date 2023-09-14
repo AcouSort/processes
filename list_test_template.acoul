@@ -1,0 +1,8 @@
+expose list<well> wells
+
+for_each(w in wells)
+	goto(w.well)
+	wait(2)
+	snapshot("image_" + w.well)
+	wait(2)
+end
