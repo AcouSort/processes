@@ -1,5 +1,5 @@
 expose int frequency = 4280
-int seed_volume = 55
+expose int seed_volume = 55
 expose int voltage = 12
 int seedwash_volume = 65
 int seedwash_velocity = 200
@@ -79,6 +79,7 @@ parallel
 	aspirate(50 + seedwash_volume, 3000)
 	goto("waste")
 endparallel
+dispense_to("waste", 20, 5000)
 set_status("Washing seed particles...")
 set_valve("chip")
 dramp(seedwash_volume, 50, seedwash_velocity, steps, 1, steps, "lin")
