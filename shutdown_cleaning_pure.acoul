@@ -1,6 +1,6 @@
+process_revision(1.2.0)
 set_light(0)
-set_valve("waste")
-empty(7500)
+empty_to("waste", 7500)
 set_status("Moving to waste...")
 set_valve("sl")
 parallel
@@ -48,3 +48,4 @@ parallel
 endparallel
 set_status("Done!")
 set_light(0)
+show_message("Shutdown cleaning complete. Please empty waste cup and waste container and power off instrument")
