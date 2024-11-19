@@ -1,5 +1,36 @@
-empty_to("waste")
-goto("waste")
-aspirate_from("buffer", 250, 5000)
-dispense_to("chip", 200, 1000)
-goto("home")
+set_light(0)
+empty_to("waste", 7500)
+set_status("Moving to waste...")
+set_valve("sl")
+parallel
+	aspirate(1000, 4000)
+	goto("waste")
+endparallel
+set_status("Cleaning...")
+dispense_to("chip", 200, 3000)
+dispense_to("waste", 800, 7500)
+
+set_status("Rinsing...")
+aspirate_from("rl", 1000, 4000)
+dispense_to("chip", 200, 3000)
+dispense_to("waste", 800, 7500)
+
+set_status("Priming...")
+aspirate_from("buffer", 1000, 3000)
+dispense_to("chip", 200, 3000)
+dispense_to("waste", 800, 7500)
+aspirate_from("buffer", 1000, 3000)
+dispense_to("chip", 200, 3000)
+dispense_to("waste", 800, 7500)
+aspirate_from("buffer", 1000, 3000)
+dispense_to("chip", 200, 3000)
+set_valve("waste")
+set_light(0, 255, 0, 1)
+set_status("Finalizing...")
+parallel
+	empty(7500)
+	goto("home")
+endparallel
+set_status("Done!")
+set_light(0)
+

@@ -1,0 +1,165 @@
+expose list<well> sample(well = "A1", volume = 400, velocity = 100)
+well buffer(well = "B1", volume! = 40, velocity = 50)
+well output(well = "C1", volume = 200, velocity = 2000)
+expose int wash_volume = 200
+expose int wash_velocity = 75
+int frequency = 4270
+int seed_volume = 95
+expose int voltage = 12
+int seedwash_volume = 120
+int seedwash_velocity = 300
+int syringe_wash = 500
+
+########## INITIALIZE #########
+
+int steps = 0
+int diff = 0
+int repeats = 0
+int time = 411
+for_each(s in sample)
+	time = time + (s.volume*60)/s.velocity
+end
+int time = time + wash_volume*60/wash_velocity
+set("required_time", time)
+
+########## SEED PARTICLE ASPIRATION ##########
+set_status("Resuspending seed particles...")
+stir("on")
+empty_to("waste", 7500)
+wait(10)
+us("track3", frequency, voltage)
+stir("off")
+set_status("Moving to seed particle tube...")
+set_light(255, 255, 255, 1)
+set_valve("buffer")
+parallel
+	goto("seed")
+	aspirate(50, 3000)
+endparallel
+set_status("Aspirating seed particles...")
+aspirate_from("chip", seed_volume, 200)
+empty_to("waste")
+
+########## SEED PARTICLE WASH ##########
+diff = seedwash_velocity - 50
+steps = diff/25
+set_status("Moving to waste...")
+set_valve("buffer")
+parallel
+	aspirate(50 + seedwash_volume, 3000)
+	goto("waste")
+endparallel
+dispense_to("waste", 20, 5000)
+set_status("Washing seed particles...")
+set_valve("chip")
+dramp(seedwash_volume, 50, seedwash_velocity, steps, 1, steps, "lin")
+snapshot(experiment_name + "_seed_particles")
+
+############ ASPIRATING SAMPLE WELLS #############
+for_each(s in sample)
+	diff = s.velocity - 50
+	steps = diff/25
+	empty_to("waste", 7500)
+	set_status("Moving to sample well...")
+	set_valve("buffer")
+	parallel
+		goto(s.well)
+		aspirate(50, 3000)
+	endparallel
+	set_valve("chip")
+	set_status("Aspirating sample...")
+	if(s.volume>900)
+		if(s.velocity>50)
+			aramp(900, 50, s.velocity, steps, 1, steps, "lin")
+		else
+			aspirate(900, s.velocity)
+		end
+		empty_to("waste", 7500)
+		aspirate_from("buffer", 50, 3000)
+		if(s.velocity>50)
+			aramp(s.volume-900, 50, s.velocity, steps, 1, steps, "lin")
+		else
+			aspirate(s.volume- 900, s.velocity)
+		end
+	else
+		if(s.velocity>50)
+			aramp(s.volume, 50, s.velocity, steps, 1, steps, "lin")
+		else
+			aspirate(s.volume, s.velocity)
+		end
+		empty_to("waste", 7500)
+	endif
+end
+
+############### ASPIRATING BUFFER #################
+
+diff = buffer.velocity - 50
+steps = diff/25
+set_status("Moving to buffer well...")
+set_valve("buffer")
+parallel
+	aspirate(50, 3000)
+	goto(buffer.well)
+endparallel
+set_status("Aspirating buffer...")
+set_valve("chip")
+if(buffer.velocity>50)
+	aramp(buffer.volume, 50, buffer.velocity, steps, 1, steps, "lin")
+else
+	aspirate(buffer.volume, buffer.velocity)
+endif
+snapshot(experiment_name + "_sample")
+
+############# SYRINGE WASH ################
+
+set_status("Cleaning syringe...")
+empty_to("waste", 7500)
+aspirate_from("buffer", 1000, 3000)
+empty_to("waste", 7500)
+aspirate_from("buffer", 1000, 3000)
+empty_to("waste", 7500)
+
+
+############### WASHING ##################
+
+int diff = wash_velocity - 50
+int steps = diff/25
+set_status("Moving to waste...")
+set_valve("buffer")
+parallel
+	aspirate(wash_volume + 50, 3000)
+	goto("waste")
+endparallel
+dispense_to("waste", 20, 5000)
+set_status("Washing EVs...")
+set_valve("chip")
+if(wash_velocity>50)
+	dramp(wash_volume, 50, wash_velocity, steps, 1, steps, "lin")
+else
+	dispense(wash_volume, wash_velocity)
+end
+snapshot(experiment_name + "_washed_sample")
+
+############# DISPENSING SAMPLE ###############
+
+set_status("Moving to output well...")
+set_valve("buffer")
+parallel
+	goto(output.well)
+	aspirate(output.volume + 50, 3000)
+endparallel
+us("constant", 0, 0)
+dispense_to("waste", 20, 5000)
+set_status("Dispensing sample...")
+dispense_to("chip", output.volume, output.velocity)
+set_light(0, 255, 0, 1)
+snapshot(experiment_name + "_after_dispense")
+set_valve("waste")
+parallel
+	goto("home")
+	empty(7500)
+endparallel
+set_status("Done!")
+set_light(0)
+add_process_after("post_sample_clean_short_pure.acoul")
+

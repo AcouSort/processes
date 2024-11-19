@@ -1,0 +1,20 @@
+set_light(0)
+empty_to("waste", 7500)
+set_status("Moving to waste...")
+set_valve("buffer")
+parallel
+	aspirate(1000, 3000)
+	goto("waste")
+endparallel
+set_status("Priming...")
+dispense_to("chip", 400, 3000)
+set_valve("waste")
+set_light(0, 255, 0, 1)
+set_status("Finalizing...")
+parallel
+	empty(7500)
+	goto("home")
+endparallel
+set_status("Done!")
+set_light(0)
+

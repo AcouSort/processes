@@ -1,0 +1,187 @@
+well sample(well = "A1", volume = 100, velocity = 50)
+well buffer(well = "B1", volume! = 60, velocity = 50)
+well output(well = "C1", volume = 250, velocity = 2000)
+expose int wash_volume = 300
+expose int wash_velocity = 100
+expose int frequency = 4270
+expose int seed_volume = 95
+expose int voltage = 12
+int seedwash_volume = 120
+int seedwash_velocity = 300
+expose bool flush = true
+expose bool recording = false
+
+########## INITIALIZE #########
+
+int steps = 0
+int diff = 0
+
+int time = 442
+set("required_time", time)
+set_light(0)
+
+if(flush)
+	########### PRIMING ############
+	show_message("Please fill well H12 with 70% Ethanol and press OK")
+	set_status("Moving to well...")
+	set_valve("waste")
+	parallel
+		empty(7500)
+		goto("h12")
+	endparallel
+	aspirate_from("rl", 50, 3000)
+	set_status("Aspirating ethanol...")
+	aspirate_from("chip", 250, 400)
+
+	set_status("Moving to waste...")
+	set_valve("waste")
+	parallel
+		empty(7500)
+		goto("waste")
+	endparallel
+	set_status("Priming...")
+	aspirate_from("buffer", 200, 3000)
+	empty_to("waste", 7500)
+	aspirate_from("buffer", 1000, 3000)
+	dispense_to("chip", 200, 3000)
+	empty_to("waste", 7500)
+	aspirate_from("buffer", 1000, 3000)
+	dispense_to("chip", 200, 3000)
+	empty_to("waste", 7500)
+	set_status("Resuspending seed particles...")
+	aspirate_from("buffer", 1000, 3000)
+	stir("on")
+	dispense_to("chip", 200, 3000)
+	us("track3", frequency, voltage)
+	empty_to("waste", 7500)
+	stir("off")
+else
+	empty_to("waste", 7500)
+	set_status("Resuspending seed particles...")
+	stir("on")
+	wait("10")
+	stir("off")
+	us("track3", frequency, voltage)
+end
+
+########## SEED PARTICLE ASPIRATION ##########
+set_valve("buffer")
+parallel
+	goto("seed")
+	aspirate(50, 3000)
+endparallel
+set_status("Aspirating seed particles...")
+set_light(255, 255, 255, 1)
+if(recording)
+	video_start(experiment_name + "_recording")
+endif
+aspirate_from("chip", seed_volume, 200)
+empty_to("waste", 7500)
+
+########## SEED PARTICLE WASH ##########
+diff = seedwash_velocity - 50
+steps = diff/25
+set_status("Moving to waste...")
+set_valve("buffer")
+parallel
+	aspirate(50 + seedwash_volume, 3000)
+	goto("waste")
+endparallel
+dispense_to("waste", 20, 5000)
+set_status("Washing seed particles...")
+set_valve("chip")
+dramp(seedwash_volume, 50, seedwash_velocity, steps, 1, steps, "lin")
+if(recording)
+	video_end()
+	wait(1)
+endif
+snapshot(experiment_name + "_seed_particles")
+set_light(0)
+
+
+############ ASPIRATING SAMPLE WELL #############
+diff = sample.velocity - 50
+steps = diff/25
+set_status("Moving to sample well...")
+set_valve("buffer")
+parallel
+	aspirate(50, 3000)
+	goto(sample.well)
+endparallel
+set_status("Aspirating Europium beads...")
+set_valve("chip")
+if(sample.velocity>50)
+	aramp(sample.volume, 50, sample.velocity, steps, 60, steps, "lin")
+else
+	aspirate(sample.volume, sample.velocity)
+end
+
+############### ASPIRATING BUFFER #################
+
+diff = buffer.velocity - 50
+steps = diff/25
+set_status("Moving to buffer well...")
+set_valve("waste")
+parallel
+	empty(7500)
+	goto(buffer.well)
+endparallel
+aspirate_from("buffer", 50, 3000)
+set_status("Aspirating buffer...")
+set_valve("chip")
+if(buffer.velocity>50)
+	aramp(buffer.volume, 50, buffer.velocity, steps, 1, steps, "lin")
+else
+	aspirate(buffer.volume, buffer.velocity)
+endif
+snapshot(experiment_name + "_sample_aspiration")
+
+############# SYRINGE WASH ################
+set_status("Cleaning syringe...")
+aspirate_from("buffer", 1000, 3000)
+empty_to("waste", 7500)
+aspirate_from("buffer", 1000, 3000)
+empty_to("waste", 7500)
+
+############### WASHING ##################
+
+int diff = wash_velocity - 50
+int steps = diff/25 + 1
+set_status("Moving to waste...")
+set_valve("buffer")
+parallel
+	aspirate(wash_volume + 50, 3000)
+	goto("waste")
+endparallel
+dispense_to("waste", 20, 5000)
+set_status("Washing Europium beads...")
+set_valve("chip")
+if(wash_velocity>50)
+	dramp(wash_volume, 50, wash_velocity, steps, 1, steps, "lin")
+else
+	dispense(wash_volume, wash_velocity)
+end
+snapshot(experiment_name + "_washed_sample")
+
+############# DISPENSING SAMPLE ###############
+
+set_status("Moving to output well...")
+set_valve("buffer")
+parallel
+	goto(output.well)
+	aspirate(output.volume + 50, 3000)
+endparallel
+dispense_to("waste", 20, 5000)
+us("constant", 0, 0)
+set_status("Dispensing sample...")
+dispense_to("chip", output.volume, output.velocity)
+snapshot(experiment_name + "_after_dispense")
+set_light(0, 255, 0, 1)
+set_valve("waste")
+parallel
+	empty(7500)
+	goto("home")
+endparallel
+set_status("Done!")
+set_light(0)
+add_process_after("post_sample_clean_short_pure.acoul")

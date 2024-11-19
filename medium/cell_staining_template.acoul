@@ -1,0 +1,173 @@
+expose list<well> sample(well = "A1", volume = 400, velocity = 200)
+well buffer(well = "B1", volume! = 150, velocity = 200)
+expose list<well> stain(well = "C1", volume = 30, velocity = 100)
+well output(well = "D1", volume = 200, velocity = 2000)
+expose int wash_volume = 200
+expose int wash_velocity = 200
+int frequency = 4270
+int voltage = 12
+int stainwash_volume = 200
+expose int incubation_time = 3
+
+########## INITIALIZE #########
+
+int steps = 0
+int diff = 0
+int time = 442
+for_each(s in sample)
+	time = time + (s.volume*60)/(s.velocity)
+end
+time = time + wash_volume*60/wash_velocity
+set("required_time", time)
+
+int i = 0
+for_each(s in sample)
+    if(i < 1)
+        ############ ASPIRATING SAMPLE WELL #############
+		set_status("Moving to sample well...")
+		set_valve("buffer")
+		us("track3", frequency, voltage)
+		parallel
+			goto(s.well)
+			aspirate(50, 3000)
+		endparallel
+		set_status("Aspirating cells...")
+		set_light(255,255,255,1)
+		set_valve("chip")
+		aspirate_from("chip", s.volume, s.velocity)
+	else
+		############# ASPIRATING ADDITIONAL SAMPLE WELLS ################
+		diff = s.velocity - 50
+		steps = diff/25
+		set_valve("waste")
+		set_status("Moving to next sample well...")
+		parallel
+			empty(7500)
+			goto(s.well)
+		endparallel
+		aspirate_from("buffer", 50, 3000)
+		set_status("Aspirating cells...")
+		set_valve("chip")
+		if(s.velocity>50)
+			aramp(s.volume, 50, s.velocity, steps, 1, steps, "lin")
+		else
+			aspirate(s.volume, s.velocity)
+		end
+	end
+	i = i + 1
+end
+
+############### ASPIRATING BUFFER #################
+
+diff = buffer.velocity - 50
+steps = diff/25
+set_status("Moving to buffer well...")
+set_valve("waste")
+parallel
+	empty(7500)
+	goto(buffer.well)
+endparallel
+aspirate_from("buffer", 50, 3000)
+set_status("Aspirating buffer...")
+set_valve("chip")
+if(buffer.velocity>50)
+	aramp(60, 50, buffer.velocity, steps, 1, steps, "lin")
+else
+	aspirate(60, buffer.velocity)
+endif
+snapshot(experiment_name + "_sample")
+
+############# SYRINGE WASH ################
+
+set_status("Cleaning syringe...")
+aspirate_from("buffer", 1000, 3000)
+empty_to("waste", 7500)
+aspirate_from("buffer", 500, 3000)
+empty_to("waste", 7500)
+
+############### WASHING ##################
+
+int diff = wash_velocity - 50
+int steps = diff/25 + 1
+set_status("Moving to waste...")
+set_valve("buffer")
+parallel
+	aspirate(wash_volume + 50, 3000)
+	goto("waste")
+endparallel
+dispense_to("waste", 20, 5000)
+set_status("Washing cells...")
+set_valve("chip")
+if(wash_velocity>50)
+	dramp(wash_volume, 50, wash_velocity, steps, 1, steps, "lin")
+else
+	dispense(wash_volume, wash_velocity)
+end
+snapshot(experiment_name + "_washed_sample")
+
+############## ASPIRATING STAIN ##############
+set_light(0)
+for_each(st in stain)
+	empty_to("waste", 7500)
+	set_valve("buffer")
+	parallel
+		aspirate(50, 3000)
+		goto(st.well)
+	endparallel
+	set_valve("chip")
+	if(st.velocity>50)
+		aramp(st.volume, 50, st.velocity, steps, 1, steps, "lin")
+	else
+		aspirate(st.volume, st.velocity)
+	endif
+	goto(buffer.well)
+	aspirate_from("chip", 40, 100)
+	repeat(incubation_time)
+		dispense_to("chip", 15, 60)
+		aspirate_from("chip", 15, 60)
+		dispense_to("chip", 15, 60)
+		aspirate_from("chip", 15, 60)
+	end
+
+	############### WASHING2 ##################
+	int diff = wash_velocity - 50
+	int steps = diff/25 + 1
+	set_status("Moving to waste...")
+	set_valve("buffer")
+	parallel
+		aspirate(stainwash_volume + 50, 3000)
+		goto("waste")
+	endparallel
+	dispense_to("waste", 20, 5000)
+	set_status("Washing cells...")
+	set_valve("chip")
+	if(wash_velocity>50)
+		dramp(stainwash_volume, 50, wash_velocity, steps, 1, steps, "lin")
+	else
+		dispense(stainwash_volume, wash_velocity)
+	end
+	snapshot(experiment_name + "_washed_stained_sample")
+end
+
+############# DISPENSING SAMPLE ###############
+
+set_status("Moving to output well...")
+set_valve("buffer")
+parallel
+	goto(output.well)
+	aspirate(output.volume + 50, 3000)
+endparallel
+dispense_to("waste", 50, 2000)
+us("constant", 0, 0)
+set_status("Dispensing cells...")
+dispense_to("chip", output.volume, output.velocity)
+set_light(0, 255, 0, 1)
+snapshot(experiment_name + "_after_dispense")
+set_valve("waste")
+parallel
+	empty(7500)
+	goto("home")
+endparallel
+set_status("Done!")
+add_process_after("post_sample_clean_short_pure.acoul")
+set_light(0)
