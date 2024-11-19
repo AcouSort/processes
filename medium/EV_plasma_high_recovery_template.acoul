@@ -1,10 +1,11 @@
 process_revision(1.2.0)
-expose list<well> sample(well = "A1", volume = 50, velocity = 50)
-well buffer(well = "B1", volume! = 45, velocity = 50)
+well sample(well = "A1", volume = 50, velocity = 50)
+well buffer(well = "B1", volume! = 100, velocity = 50)
 well output(well = "C1", volume = 60, velocity = 1000)
 expose int wash_volume = 200
 expose int wash_velocity = 50
-expose int frequency = 4280
+int frequency = 4280
+int sweep_volume = 40
 int seed_volume = 95
 expose int voltage = 12
 int seedwash_volume = 150
@@ -50,7 +51,7 @@ steps = diff/25 + 1
 set_status("Moving to waste...")
 set_valve("buffer")
 parallel
-	aspirate(50 + seedwash_volume, 3000)
+	aspirate(seedwash_volume + 50, 3000)
 	goto("waste")
 endparallel
 dispense_to("waste", 20, 5000)
@@ -59,42 +60,18 @@ set_valve("chip")
 dramp(seedwash_volume, 50, seedwash_velocity, steps, 1, steps, "lin")
 snapshot(experiment_name + "_seed_particles")
 
-int i = 0
-for_each(s in sample)
-    if(i < 1)
-        ############ ASPIRATING SAMPLE WELL #############
-		diff = s.velocity - 50
-		steps = diff/25
-		set_status("Moving to sample well...")
-		goto(s.well)
-		set_status("Aspirating sample...")
-		set_valve("chip")
-		if(s.velocity>50)
-			aramp(s.volume, 50, s.velocity, steps, 60, steps, "lin")
-		else
-			aspirate(s.volume, s.velocity)
-		end
-	else
-		############# ASPIRATING ADDITIONAL SAMPLE WELLS ################
-		diff = s.velocity - 50
-		steps = diff/25
-		set_status("Moving to next sample well...")
-		set_valve("waste")
-		parallel
-			empty(7500)
-			goto(s.well)
-		endparallel
-		aspirate_from("buffer", 50, 3000)
-		set_status("Aspirating sample...")
-		set_valve("chip")
-		if(s.velocity>49)
-			aramp(s.volume, 50, s.velocity, steps, 1, steps, "lin")
-		else
-			aspirate(s.volume, s.velocity)
-		end
-	end
-	i = i + 1
-end
+########## ASPIRATING SAMPLE ################
+diff = sample.velocity - 50
+steps = diff/25
+set_status("Moving to sample well...")
+goto(sample.well)
+set_status("Aspirating sample...")
+set_valve("chip")
+if(s.velocity>50)
+	aramp(sample.volume, 50, sample.velocity, steps, 60, steps, "lin")
+else
+	aspirate(sample.volume, sample.velocity)
+endif
 
 ############### ASPIRATING BUFFER #################
 
@@ -109,10 +86,10 @@ endparallel
 aspirate_from("buffer", 50, 3000)
 set_status("Aspirating buffer...")
 set_valve("chip")
-if(buffer.velocity>49)
-	aramp(buffer.volume, 50, buffer.velocity, steps, 1, steps, "lin")
+if(buffer.velocity>50)
+	aramp(sweep_volume, 50, buffer.velocity, steps, 1, steps, "lin")
 else
-	aspirate(buffer.volume, buffer.velocity)
+	aspirate(sweep_volume, buffer.velocity)
 endif
 snapshot(experiment_name + "_sample_aspiration")
 
@@ -120,10 +97,10 @@ snapshot(experiment_name + "_sample_aspiration")
 
 set_status("Enriching sample...")
 repeat(enrichment_time)
-	dispense_to("waste", 10, 5000)
-	dispense_to("chip", 25, 50)
-	aspirate_from("buffer", 10, 3000)
-	aspirate_from("chip", 25, 50)
+	dispense_to("waste", 20, 5000)
+	dispense_to("chip", 20, 50)
+	aspirate_from("buffer", 20, 3000)
+	aspirate_from("chip", 20, 50)
 end
 
 ############# SYRINGE WASH ################
