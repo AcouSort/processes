@@ -1,0 +1,106 @@
+expose int frequency = 4280
+int seed_volume = 55
+expose int voltage = 12
+int seedwash_volume = 65
+int seedwash_velocity = 200
+expose bool flush = true
+expose bool recording = true
+
+########## INITIALIZE #########
+int steps = 0
+int diff = 0
+int time = 442
+set("required_time", time)
+set_light(0)
+if(flush)
+	########### PRIMING ############
+	show_message("Please fill well H12 with 300 uL 70% Ethanol and press OK")
+	set_status("Moving to well...")
+	set_valve("waste")
+	parallel
+		empty(7500)
+		goto("h12")
+	endparallel
+	aspirate_from("sl", 50, 3000)
+	set_status("Aspirating ethanol...")
+	aspirate_from("chip", 250, 400)
+
+	set_status("Moving to waste...")
+	set_valve("waste")
+	parallel
+		empty(7500)
+		goto("waste")
+	endparallel
+	set_status("Priming...")
+	aspirate_from("buffer", 200, 3000)
+	empty_to("waste", 7500)
+	aspirate_from("buffer", 1000, 3000)
+	dispense_to("chip", 200, 3000)
+	empty_to("waste", 7500)
+	aspirate_from("buffer", 1000, 3000)
+	dispense_to("chip", 200, 3000)
+	empty_to("waste", 7500)
+	set_status("Resuspending seed particles...")
+	aspirate_from("buffer", 1000, 3000)
+	stir("on")
+	dispense_to("chip", 200, 3000)
+	us("track3", frequency, voltage)
+	empty_to("waste", 7500)
+	stir("off")
+else
+	empty_to("waste", 7500)
+	set_status("Resuspending seed particles...")
+	stir("on")
+	wait("10")
+	stir("off")
+	us("track3", frequency, voltage)
+end
+
+########## SEED PARTICLE ASPIRATION ##########
+set_light(255, 255, 255, 1)
+set_valve("buffer")
+parallel
+	goto("seed")
+	aspirate(50, 3000)
+endparallel
+set_status("Aspirating seed particles...")
+if(recording)
+	video_start(experiment_name + "_recording")
+endif
+aspirate_from("chip", seed_volume, 200)
+empty_to("waste", 7500)
+
+########## SEED PARTICLE WASH ##########
+diff = seedwash_velocity - 50
+steps = diff/25
+set_status("Moving to waste...")
+set_valve("buffer")
+parallel
+	aspirate(50 + seedwash_volume, 3000)
+	goto("waste")
+endparallel
+set_status("Washing seed particles...")
+set_valve("chip")
+dramp(seedwash_volume, 50, seedwash_velocity, steps, 1, steps, "lin")
+if(recording)
+	video_end()
+	wait(1)
+endif
+snapshot(experiment_name + "_12um")
+
+############# DISPENSING SAMPLE ###############
+
+set_status("Moving to waste cup...")
+us("constant", 0, 0)
+set_valve("di")
+parallel
+	goto("waste")
+	aspirate(400, 3000)
+endparallel
+set_status("Filling chip with Milli-Q...")
+dispense_to("chip", 400, 3000)
+set_light(0, 255, 0, 1)
+snapshot(experiment_name + "_after_dispense")
+goto("home")
+set_status("Done! Report to intranet.")
+set_light(0)
