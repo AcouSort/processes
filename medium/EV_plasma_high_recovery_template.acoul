@@ -1,7 +1,7 @@
 process_revision(1.2.0)
 well sample(well = "A1", volume = 50, velocity = 50)
-well buffer(well = "B1", volume! = 100, velocity = 50)
-well output(well = "C1", volume = 60, velocity = 1000)
+well buffer(well = "B1", volume! = 60, velocity = 50)
+well output(well = "C1", volume = 30, velocity = 1000)
 expose int wash_volume = 200
 expose int wash_velocity = 50
 int frequency = 4280
