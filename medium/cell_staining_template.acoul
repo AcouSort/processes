@@ -20,6 +20,7 @@ for_each(s in sample)
 	time = time + (s.volume*60)/(s.velocity)
 end
 time = time + wash_volume*60/wash_velocity
+time = time + incubation_time
 set("required_time", time)
 
 int i = 0
