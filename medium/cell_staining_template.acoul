@@ -1,12 +1,14 @@
+process_revision(1.2.0)
 expose list<well> sample(well = "A1", volume = 400, velocity = 200)
 well buffer(well = "B1", volume! = 150, velocity = 200)
-expose list<well> stain(well = "C1", volume = 30, velocity = 100)
+expose list<well> stain(well = "C1", volume = 20, velocity = 100)
 well output(well = "D1", volume = 200, velocity = 2000)
 expose int wash_volume = 200
 expose int wash_velocity = 200
 int frequency = 4270
 int voltage = 12
-int stainwash_volume = 200
+int stainwash_volume = 150
+int stainwash_velocity = 100
 expose int incubation_time = 3
 
 ########## INITIALIZE #########
@@ -106,6 +108,7 @@ end
 snapshot(experiment_name + "_washed_sample")
 
 ############## ASPIRATING STAIN ##############
+############# Stain is aspirated, total 20 ul. then, 30 ul buffer is aspirated and finally plug is moved over cells, 20 ul forward and back at 40 ul/min. #############
 set_light(0)
 for_each(st in stain)
 	empty_to("waste", 7500)
@@ -121,12 +124,12 @@ for_each(st in stain)
 		aspirate(st.volume, st.velocity)
 	endif
 	goto(buffer.well)
-	aspirate_from("chip", 40, 100)
+	aspirate_from("chip", 30, 100)
 	repeat(incubation_time)
-		dispense_to("chip", 15, 60)
-		aspirate_from("chip", 15, 60)
-		dispense_to("chip", 15, 60)
-		aspirate_from("chip", 15, 60)
+		dispense_to("waste", 20, 5000)
+		dispense_to("chip", 20, 40)
+		aspirate_from("buffer", 20, 3000) 
+		aspirate_from("chip", 20, 40)
 	end
 
 	############### WASHING2 ##################
@@ -142,24 +145,36 @@ for_each(st in stain)
 	set_status("Washing cells...")
 	set_valve("chip")
 	if(wash_velocity>50)
-		dramp(stainwash_volume, 50, wash_velocity, steps, 1, steps, "lin")
+		dramp(stainwash_volume, 50, stainwash_velocity, steps, 1, steps, "lin")
 	else
-		dispense(stainwash_volume, wash_velocity)
+		dispense(stainwash_volume, stainwash_velocity)
 	end
 	snapshot(experiment_name + "_washed_stained_sample")
 end
 
 ############# DISPENSING SAMPLE ###############
 
+
 set_status("Moving to output well...")
 set_valve("buffer")
-parallel
-	goto(output.well)
-	aspirate(output.volume + 50, 3000)
-endparallel
-dispense_to("waste", 50, 2000)
-us("constant", 0, 0)
-set_status("Dispensing cells...")
+if(output.volume<51)
+	us("constant", 0, 0)
+	parallel
+		goto(output.well)
+		aspirate(output.volume + 50, 3000)
+	endparallel
+	dispense_to("waste", 20, 5000)
+	wait(15)
+else
+	parallel
+		goto(output.well)
+		aspirate(output.volume + 50, 3000)
+	endparallel
+	dispense_to("waste", 20, 5000)
+	us("constant", 0, 0)
+endif
+
+set_status("Dispensing sample...")
 dispense_to("chip", output.volume, output.velocity)
 set_light(0, 255, 0, 1)
 snapshot(experiment_name + "_after_dispense")
