@@ -127,19 +127,47 @@ snapshot(experiment_name + "_washed_sample")
 
 ############# DISPENSING SAMPLE ###############
 
+
 set_status("Moving to output well...")
 set_valve("di")
-parallel
+if(output.volume<20)
+	us("constant", 0, 0)
+	parallel
+		goto("waste")
+		aspirate(output.volume + 50, 3000)
+	endparallel
+	dispense_to("waste", 20, 5000)
+	wait(15)
+	dispense_to("chip", 5, 2000)
 	goto(output.well)
-	aspirate(output.volume + 50, 3000)
-endparallel
-dispense_to("waste", 20, 5000)
-us("constant", 0, 0)
+else
+	if(output.volume<50)
+		us("constant", 0, 0)
+		parallel
+			goto(output.well)
+			aspirate(output.volume + 50, 3000)
+		endparallel
+		dispense_to("waste", 20, 5000)
+		wait(15)
+	else
+		parallel
+			goto(output.well)
+			aspirate(output.volume + 50, 3000)
+		endparallel
+		dispense_to("waste", 20, 5000)
+		us("constant", 0, 0)
+	endif
+endif
+
 set_status("Dispensing sample...")
 dispense_to("chip", output.volume, output.velocity)
 set_light(0, 255, 0, 1)
 snapshot(experiment_name + "_after_dispense")
-goto("home")
+set_valve("waste")
+parallel
+	empty(7500)
+	goto("home")
+endparallel
 set_status("Done!")
 add_process_after("rinse_pure.acoul")
 set_light(0)
