@@ -1,7 +1,7 @@
 process_revision(1.2.0)
 expose list<well> sample(well = "A1", volume = 100, velocity = 50)
 well stain(well = "B1", volume = 20, velocity = 50)
-well buffer(well = "C1", volume! = 60, velocity = 50)
+well buffer(well = "C1", volume! = 120, velocity = 50)
 well output(well = "D1", volume = 200, velocity = 2000)
 expose int wash_volume = 200
 expose int wash_velocity = 50
@@ -14,7 +14,8 @@ expose int staining_time = 3
 int seedwash_volume = 150
 int syringe_wash = 500
 int seedwash_velocity = 300
-expose int buffer_volume = 25
+int sweep_volume = 60
+expose int buffer_volume = 20
 
 ########## INITIALIZE #########
 
@@ -114,9 +115,9 @@ aspirate_from("buffer", 50, 3000)
 set_status("Aspirating buffer...")
 set_valve("chip")
 if(buffer.velocity>50)
-	aramp(buffer.volume, 50, buffer.velocity, steps, 1, steps, "lin")
+	aramp(sweep_volume, 50, buffer.velocity, steps, 1, steps, "lin")
 else
-	aspirate(buffer.volume, buffer.velocity)
+	aspirate(sweep_volume, buffer.velocity)
 endif
 snapshot(experiment_name + "_sample_aspiration")
 
