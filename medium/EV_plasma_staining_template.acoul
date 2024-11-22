@@ -71,7 +71,11 @@ for_each(s in sample)
 		diff = s.velocity - 50
 		steps = diff/25
 		set_status("Moving to sample well...")
-		goto(s.well)
+		set_valve("buffer")
+		parallel
+			goto(s.well)
+			aspirate(50, 3000)
+		endparallel
 		set_status("Aspirating sample...")
 		set_valve("chip")
 		if(s.velocity>50)
@@ -202,13 +206,36 @@ snapshot(experiment_name + "_stained_sample")
 
 set_status("Moving to output well...")
 set_valve("buffer")
-parallel
+if(output.volume<20)
+	us("constant", 0, 0)
+	parallel
+		goto("waste")
+		aspirate(output.volume + 50, 3000)
+	endparallel
+	dispense_to("waste", 20, 5000)
+	wait(15)
+	dispense_to("chip", 5, 2000)
 	goto(output.well)
-	aspirate(output.volume + 20, 3000)
-endparallel
-us("constant", 0, 0)
+else
+	if(output.volume<50)
+		us("constant", 0, 0)
+		parallel
+			goto(output.well)
+			aspirate(output.volume + 50, 3000)
+		endparallel
+		dispense_to("waste", 20, 5000)
+		wait(15)
+	else
+		parallel
+			goto(output.well)
+			aspirate(output.volume + 50, 3000)
+		endparallel
+		dispense_to("waste", 20, 5000)
+		us("constant", 0, 0)
+	endif
+endif
+
 set_status("Dispensing sample...")
-dispense_to("waste", 20, 5000)
 dispense_to("chip", output.volume, output.velocity)
 set_light(0, 255, 0, 1)
 snapshot(experiment_name + "_after_dispense")
