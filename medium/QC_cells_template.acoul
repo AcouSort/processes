@@ -120,6 +120,7 @@ parallel
 	aspirate(wash_volume + 50, 3000)
 	goto("waste")
 endparallel
+dispense_to("waste", 20, 5000)
 set_status("Washing cells...")
 set_valve("chip")
 if(wash_velocity>50)
@@ -135,9 +136,10 @@ set_status("Moving to output well...")
 set_valve("buffer")
 parallel
 	goto(output.well)
-	aspirate(output.volume, 3000)
+	aspirate(output.volume + 50, 3000)
 endparallel
 us("constant", 0, 0)
+dispense_to("waste", 20, 5000)
 set_status("Dispensing sample...")
 dispense_to("chip", output.volume, output.velocity)
 snapshot(experiment_name + "_dispensed")
