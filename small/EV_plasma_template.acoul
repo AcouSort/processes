@@ -2,12 +2,12 @@ process_revision(1.2.0)
 expose list<well> sample(well = "A1", volume = 50, velocity = 20)
 well buffer(well = "B1", volume! = 40, velocity = 20)
 well output(well = "C1", volume = 50, velocity = 1000)
-expose int wash_volume = 120
+expose int wash_volume = 150
 expose int wash_velocity = 30
-int frequency = 4200
-int seed_volume = 35
+int frequency = 4150
+int seed_volume = 28
 int voltage = 10
-int seedwash_volume = 45
+int seedwash_volume = 40
 int seedwash_velocity = 60
 
 ########## INITIALIZE #########
@@ -15,7 +15,7 @@ int seedwash_velocity = 60
 int steps = 0
 int diff = 0
 
-int time = 442
+int time = 392
 for_each(s in sample)
 	time = time + (s.volume*60)/(s.velocity)
 end
