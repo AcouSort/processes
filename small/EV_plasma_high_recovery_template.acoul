@@ -4,7 +4,7 @@ well buffer(well = "B1", volume! = 50, velocity = 20)
 well output(well = "C1", volume = 50, velocity = 1000)
 expose int wash_volume = 120
 expose int wash_velocity = 30
-int frequency = 4200
+int frequency = 4150
 int seed_volume = 35
 int voltage = 10
 int seedwash_volume = 45
