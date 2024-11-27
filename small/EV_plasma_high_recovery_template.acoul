@@ -2,12 +2,12 @@ process_revision(1.2.0)
 well sample(well = "Tube1", volume = 50, velocity = 20)
 well buffer(well = "B1", volume! = 50, velocity = 20)
 well output(well = "C1", volume = 50, velocity = 1000)
-expose int wash_volume = 120
-expose int wash_velocity = 30
+expose int wash_volume = 100
+expose int wash_velocity = 20
 int frequency = 4150
-int seed_volume = 35
+int seed_volume = 28
 int voltage = 10
-int seedwash_volume = 45
+int seedwash_volume = 40
 int seedwash_velocity = 60
 expose int enrichment_time = 3
 
@@ -50,6 +50,7 @@ parallel
 	goto("waste")
 endparallel
 set_status("Washing seed particles...")
+dispense_to("waste", 20, 5000)
 set_valve("chip")
 dramp(seedwash_volume, 10, seedwash_velocity, steps, 1, steps, "lin")
 snapshot(experiment_name + "_seed_particles")
@@ -91,7 +92,9 @@ snapshot(experiment_name + "_sample_aspiration")
 ############ HIGH RECOVERY ################
 
 repeat(enrichment_time)
+	dispense_to("waste", 20, 5000)
 	dispense_to("chip", 10, 20)
+	aspirate_from("buffer", 20, 5000)
 	aspirate_from("chip", 10, 20)
 end
 
@@ -112,6 +115,7 @@ parallel
 	goto("waste")
 endparallel
 set_status("Washing EVs...")
+dispense_to("waste", 20, 5000)
 set_valve("chip")
 if(wash_velocity>20)
 	dramp(wash_volume, 20, wash_velocity, steps, 1, steps, "lin")
