@@ -1,3 +1,4 @@
+process_revision(1.2.0)
 expose list<well> sample(well = "A1", volume = 80, velocity = 60)
 well buffer(well = "B1", volume! = 40, velocity = 60)
 well output(well = "C1", volume = 200, velocity = 500)
