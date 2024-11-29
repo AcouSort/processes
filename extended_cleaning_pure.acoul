@@ -1,3 +1,4 @@
+process_revision(1.2.0)
 set_light(0)
 show_message("NOTE: Clean all reservoir bottles and replace all liquids before pressing OK!")
 set_status("Emptying syringe...")
