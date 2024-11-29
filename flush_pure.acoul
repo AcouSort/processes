@@ -1,3 +1,4 @@
+process_revision(1.2.0)
 set("required_time", 210)
 set_light(0)
 show_message("Please fill well H12 with 300 uL 70% Ethanol before pressing OK")
