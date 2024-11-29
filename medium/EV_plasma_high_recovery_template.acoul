@@ -17,12 +17,7 @@ expose int enrichment_time = 2
 
 int steps = 0
 int diff = 0
-int total_volume = 0
 int sampletime = 0
-for_each(s in sample)
-	sampletime = sampletime + (s.volume*60)/(s.velocity)
-	total_volume = total_volume + s.volume
-end
 int samplediff = sampletime - 60
 int washdiff = wash_volume*60/wash_velocity
 int time = 442 + samplediff + washdiff
@@ -67,7 +62,7 @@ set_status("Moving to sample well...")
 goto(sample.well)
 set_status("Aspirating sample...")
 set_valve("chip")
-if(s.velocity>50)
+if(sample.velocity>50)
 	aramp(sample.volume, 50, sample.velocity, steps, 60, steps, "lin")
 else
 	aspirate(sample.volume, sample.velocity)
