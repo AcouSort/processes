@@ -6,12 +6,14 @@ well output(well = "C1", volume! = 200, velocity! = 2000)
 ###### INITIALIZING #####
 int diff = 0
 int steps = 0
-
 int wash_volume = 200
 int wash_velocity = 200
 int frequency = 4280
 expose int voltage = 12
 expose bool flush = true
+expose bool di_rinse = false
+expose bool recording = false
+
 int time = 0
 set_light(255, 255, 255, 1)
 if(flush)
@@ -67,19 +69,22 @@ else
 	empty_to("waste", 7500)
 	aspirate_from("buffer", 1000, 3000)
 	dispense_to("chip", 200, 3000)
-	us("track3", frequency, voltage)
 	empty_to("waste", 7500)
 end
 
 ############ ASPIRATING SAMPLE WELL #############
 
 set_status("Moving to sample well...")
+us("track3", frequency, voltage)
 set_valve("buffer")
 parallel
 	goto(sample.well)
 	aspirate(50, 3000)
 endparallel
 set_status("Aspirating sample...")
+if(recording)
+	video_start(experiment_name + "_recording")
+end
 aspirate_from("chip", sample.volume, sample.velocity)
 
 ############### ASPIRATING BUFFER #################
@@ -100,6 +105,10 @@ if(buffer.velocity>50)
 else
 	aspirate(buffer.volume, buffer.velocity)
 endif
+if(recording)
+	video_end()
+	wait(1)
+end
 snapshot(experiment_name + "_cells")
 
 ############# SYRINGE WASH ################
@@ -145,6 +154,14 @@ set_status("Dispensing sample...")
 dispense_to("chip", output.volume, output.velocity)
 snapshot(experiment_name + "_dispensed")
 set_light(0, 255, 0, 1)
+if(di_rinse)
+	set_valve("di")
+	parallel
+		aspirate(300, 3000)
+		goto("waste")
+	endparallel
+	dispense_to("chip", 300, 3000)
+end
 set_status("Finishing...")
 set_valve("waste")
 parallel
