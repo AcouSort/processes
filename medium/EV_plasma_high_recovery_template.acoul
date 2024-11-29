@@ -102,7 +102,7 @@ end
 
 set_status("Cleaning syringe...")
 empty_to("waste", 7500)
-if(total_volume>100)
+if(sample.volume>50)
 	aspirate_from("sl", syringe_wash, 4000)
 	empty_to("waste", 7500)
 	aspirate_from("sl", 1000, 4000)
