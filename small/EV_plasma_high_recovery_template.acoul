@@ -16,13 +16,6 @@ expose int enrichment_time = 3
 int steps = 0
 int diff = 0
 
-int time = 442
-for_each(s in sample)
-	time = time + (s.volume*60)/(s.velocity)
-end
-time = time + wash_volume*60/wash_velocity - 60
-set("required_time", time)
-
 ########## SEED PARTICLE ASPIRATION ##########
 set_status("Resuspending seed particles...")
 stir("on")
@@ -94,7 +87,7 @@ snapshot(experiment_name + "_sample_aspiration")
 repeat(enrichment_time)
 	dispense_to("waste", 20, 5000)
 	dispense_to("chip", 10, 20)
-	aspirate_from("buffer", 20, 5000)
+	aspirate_from("buffer", 20, 3000)
 	aspirate_from("chip", 10, 20)
 end
 
