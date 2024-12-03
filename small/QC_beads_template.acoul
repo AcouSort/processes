@@ -15,15 +15,15 @@ set_light(0)
 
 ########### PRIMING ############
 set_status("Moving to waste...")
+stir("on")
 set_valve("waste")
 parallel
 	empty(7500)
 	goto("waste")
 endparallel
 set_status("Priming...")
-aspirate_from("buffer", 1000, 3000)
+aspirate_from("buffer", 200, 3000)
 dispense_to("chip", 200, 2000)
-empty_to("waste", 7500)
 us("track3", frequency, voltage)
 stir("off")
 
@@ -74,18 +74,18 @@ if(di_rinse)
 	set_valve("di")
 	parallel
 		goto("waste")
-		aspirate(400, 3000)
+		aspirate(300, 3000)
 	endparallel
 	set_status("Filling chip with Milli-Q...")
-	dispense_to("chip", 400, 3000)
+	dispense_to("chip", 300, 3000)
 else
 	set_valve("buffer")
 	parallel
 		goto("waste")
-		aspirate(400, 3000)
+		aspirate(300, 3000)
 	endparallel
 	set_status("Cleaning chip with buffer...")
-	dispense_to("chip", 400, 3000)
+	dispense_to("chip", 300, 3000)
 endif
 set_light(0, 255, 0, 1)
 snapshot(experiment_name + "_after_dispense")
