@@ -14,6 +14,7 @@ expose int staining_time = 3
 int seedwash_volume = 150
 int syringe_wash = 500
 int seedwash_velocity = 300
+
 int sweep_volume = 60
 expose int buffer_volume = 20
 
