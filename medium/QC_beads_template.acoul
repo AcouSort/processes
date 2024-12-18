@@ -96,19 +96,11 @@ snapshot(experiment_name + "_12um")
 set_status("Moving to waste cup...")
 us("constant", 0, 0)
 if(di_rinse)
-	set_valve("di")
-	parallel
-		goto("waste")
-		aspirate(400, 3000)
-	endparallel
+	aspirate_from("di", 400, 3000)
 	set_status("Filling chip with Milli-Q...")
 	dispense_to("chip", 400, 3000)
 else
-	set_valve("buffer")
-	parallel
-		goto("waste")
-		aspirate(400, 3000)
-	endparallel
+	aspirate_from("buffer", 400, 3000)
 	set_status("Cleaning chip with buffer...")
 	dispense_to("chip", 400, 3000)
 endif
