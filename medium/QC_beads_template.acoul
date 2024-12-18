@@ -1,10 +1,12 @@
+process_revision(1.2.0)
 expose int frequency = 4280
-int seed_volume = 55
+expose int seed_volume = 55
 expose int voltage = 12
 int seedwash_volume = 65
 int seedwash_velocity = 200
 expose bool flush = true
 expose bool recording = true
+expose bool di_rinse = false
 
 ########## INITIALIZE #########
 int steps = 0
@@ -21,7 +23,7 @@ if(flush)
 		empty(7500)
 		goto("h12")
 	endparallel
-	aspirate_from("sl", 50, 3000)
+	aspirate_from("buffer", 50, 3000)
 	set_status("Aspirating ethanol...")
 	aspirate_from("chip", 250, 400)
 
@@ -76,9 +78,10 @@ steps = diff/25
 set_status("Moving to waste...")
 set_valve("buffer")
 parallel
-	aspirate(50 + seedwash_volume, 3000)
+	aspirate(seedwash_volume + 50, 3000)
 	goto("waste")
 endparallel
+dispense_to("waste", 20, 5000)
 set_status("Washing seed particles...")
 set_valve("chip")
 dramp(seedwash_volume, 50, seedwash_velocity, steps, 1, steps, "lin")
@@ -92,13 +95,15 @@ snapshot(experiment_name + "_12um")
 
 set_status("Moving to waste cup...")
 us("constant", 0, 0)
-set_valve("di")
-parallel
-	goto("waste")
-	aspirate(400, 3000)
-endparallel
-set_status("Filling chip with Milli-Q...")
-dispense_to("chip", 400, 3000)
+if(di_rinse)
+	aspirate_from("di", 400, 3000)
+	set_status("Filling chip with Milli-Q...")
+	dispense_to("chip", 400, 3000)
+else
+	aspirate_from("buffer", 400, 3000)
+	set_status("Cleaning chip with buffer...")
+	dispense_to("chip", 400, 3000)
+endif
 set_light(0, 255, 0, 1)
 snapshot(experiment_name + "_after_dispense")
 goto("home")

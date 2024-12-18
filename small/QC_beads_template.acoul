@@ -1,0 +1,89 @@
+process_revision(1.2.0)
+expose int frequency = 4150
+expose int seed_volume = 28
+expose int seed_velocity = 50
+expose int voltage = 10
+int seedwash_volume = 40
+int seedwash_velocity = 50
+expose bool recording = true
+expose bool di_rinse = false
+
+########## INITIALIZE #########
+int steps = 0
+int diff = 0
+set_light(0)
+
+########### PRIMING ############
+set_status("Moving to waste...")
+stir("on")
+set_valve("waste")
+parallel
+	empty(7500)
+	goto("waste")
+endparallel
+set_status("Priming...")
+aspirate_from("buffer", 200, 3000)
+dispense_to("chip", 200, 2000)
+us("track3", frequency, voltage)
+stir("off")
+
+
+########## SEED PARTICLE ASPIRATION ##########
+set_light(255, 255, 255, 1)
+set_valve("buffer")
+parallel
+	goto("seed")
+	aspirate(50, 3000)
+endparallel
+set_status("Aspirating seed particles...")
+if(recording)
+	video_start(experiment_name + "_recording")
+endif
+aspirate_from("chip", seed_volume, seed_velocity)
+empty_to("waste", 7500)
+
+########## SEED PARTICLE WASH ##########
+diff = seedwash_velocity - 20
+steps = diff/10
+set_status("Moving to waste...")
+set_valve("buffer")
+parallel
+	aspirate(seedwash_volume + 50, 3000)
+	goto("waste")
+endparallel
+dispense_to("waste", 20, 5000)
+set_status("Washing seed particles...")
+set_valve("chip")
+dramp(seedwash_volume, 20, seedwash_velocity, steps, 1, steps, "lin")
+if(recording)
+	video_end()
+	wait(1)
+endif
+snapshot(experiment_name + "_12um")
+
+############# DISPENSING SAMPLE ###############
+
+set_status("Moving to waste cup...")
+us("constant", 0, 0)
+if(di_rinse)
+	set_valve("di")
+	parallel
+		goto("waste")
+		aspirate(300, 3000)
+	endparallel
+	set_status("Filling chip with Milli-Q...")
+	dispense_to("chip", 300, 3000)
+else
+	set_valve("buffer")
+	parallel
+		goto("waste")
+		aspirate(300, 3000)
+	endparallel
+	set_status("Cleaning chip with buffer...")
+	dispense_to("chip", 300, 3000)
+endif
+set_light(0, 255, 0, 1)
+snapshot(experiment_name + "_after_dispense")
+goto("home")
+set_status("Done! Report to intranet.")
+set_light(0)

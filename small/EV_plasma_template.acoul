@@ -1,9 +1,10 @@
+process_revision(1.2.0)
 expose list<well> sample(well = "A1", volume = 50, velocity = 20)
-well buffer(well = "B1", volume! = 50, velocity = 20)
+well buffer(well = "B1", volume! = 40, velocity = 20)
 well output(well = "C1", volume = 50, velocity = 1000)
-expose int wash_volume = 120
+expose int wash_volume = 150
 expose int wash_velocity = 30
-int frequency = 4200
+int frequency = 4150
 int seed_volume = 28
 int voltage = 10
 int seedwash_volume = 40
@@ -14,7 +15,7 @@ int seedwash_velocity = 60
 int steps = 0
 int diff = 0
 
-int time = 442
+int time = 392
 for_each(s in sample)
 	time = time + (s.volume*60)/(s.velocity)
 end
@@ -44,10 +45,11 @@ steps = diff/10
 set_status("Moving to waste...")
 set_valve("buffer")
 parallel
-	aspirate(50 + seedwash_volume, 3000)
+	aspirate(seedwash_volume + 50, 3000)
 	goto("waste")
 endparallel
 set_status("Washing seed particles...")
+dispense_to("waste", 20, 5000)
 set_valve("chip")
 dramp(seedwash_volume, 10, seedwash_velocity, steps, 1, steps, "lin")
 snapshot(experiment_name + "_seed_particles")
@@ -112,6 +114,8 @@ snapshot(experiment_name + "_sample_aspiration")
 ############# SYRINGE WASH ################
 
 set_status("Cleaning syringe...")
+aspirate_from("buffer", 1000, 3000)
+empty_to("waste", 7500)
 aspirate_from("buffer", 500, 3000)
 empty_to("waste", 7500)
 
@@ -126,6 +130,7 @@ parallel
 	goto("waste")
 endparallel
 set_status("Washing EVs...")
+dispense_to("waste", 20, 5000)
 set_valve("chip")
 if(wash_velocity>20)
 	dramp(wash_volume, 20, wash_velocity, steps, 1, steps, "lin")
@@ -135,19 +140,36 @@ end
 snapshot(experiment_name + "_washed_sample")
 
 ############# DISPENSING SAMPLE ###############
-
 set_status("Moving to output well...")
-us("constant", 0, 0)
 set_valve("buffer")
-parallel
-	goto(output.well)
-	aspirate(output.volume, 3000)
-endparallel
+
+if(output.volume<50)
+	us("constant", 0, 0)
+	parallel
+		goto(output.well)
+		aspirate(output.volume + 50, 3000)
+	endparallel
+	dispense_to("waste", 20, 5000)
+	wait(15)
+else
+	parallel
+		goto(output.well)
+		aspirate(output.volume + 50, 3000)
+	endparallel
+	dispense_to("waste", 20, 5000)
+	us("constant", 0, 0)
+endif
+
 set_status("Dispensing sample...")
 dispense_to("chip", output.volume, output.velocity)
 set_light(0, 255, 0, 1)
 snapshot(experiment_name + "_after_dispense")
-goto("home")
+set_valve("waste")
+parallel
+	empty(7500)
+	goto("home")
+endparallel
 set_status("Done!")
 add_process_after("post_sample_clean_pure.acoul")
 set_light(0)
+

@@ -1,4 +1,6 @@
+process_revision(1.2.0)
 set_light(0)
+set_status("Emptying syringe...")
 empty_to("waste", 7500)
 set_status("Moving to waste...")
 set_valve("sl")
