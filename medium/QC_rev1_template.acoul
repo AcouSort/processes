@@ -31,7 +31,12 @@ set_light(0)
 
 if(flush)
 	########### PRIMING ############
-	aspirate_from("rl", 400, 4000)
+	set_status("Rinsing...")
+	set_valve("rl")
+	parallel
+		aspirate(400, 4000)
+		goto("waste")
+	endparallel
 	dispense_to("chip", 300, 2000)
 	empty_to("waste", 7500)
 	set_status("Priming...")
@@ -193,5 +198,6 @@ else
 endif
 set_light(0)
 set_status("Done!")
+
 
 
