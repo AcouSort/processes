@@ -1,4 +1,4 @@
-process_revision(1.2.0)
+process_revision(1.3.0)
 well sample(well = "A1", volume! = 100, velocity! = 50)
 well buffer(well = "B1", volume! = 60, velocity! = 50)
 well output(well = "C1", volume! = 250, velocity! = 2000)
@@ -65,7 +65,6 @@ if(flush)
 	empty_to("waste", 7500)
 	stir("off")
 else
-	
 	set_valve("buffer")
 	parallel
 		aspirate(200, 3000)
@@ -189,17 +188,24 @@ us("constant", 0, 0)
 set_status("Dispensing sample...")
 dispense_to("chip", output.volume, output.velocity)
 snapshot(experiment_name + "_after_dispense")
-set_light(0, 255, 0, 1)
+
 set_valve("waste")
-parallel
-	empty(7500)
-	goto("home")
-endparallel
-set_status("Done!")
-set_light(0)
 if(di_rinse)
+	parallel
+		empty(7500)
+		goto("waste")
+	endparallel
 	aspirate_from("di", 200, 3500)
 	dispense_to("chip", 200, 3000)
 	aspirate_from("di", 200, 3500)
 	dispense_to("chip", 200, 3000)
+	goto("home")
+else
+	parallel
+		empty(7500)
+		goto("home")
+	endparallel
 endif
+set_light(0)
+set_status("Done!")
+
