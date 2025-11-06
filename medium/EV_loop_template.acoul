@@ -134,13 +134,36 @@ dramp(wash_volume, 50, wash_velocity, steps, 1, steps, "lin")
 ############# DISPENSING SAMPLE ###############
 
 set_status("Moving to output well...")
-us("constant", 0, 0)
 set_valve("buffer")
-parallel
-    goto(output.well)
-    aspirate(output.volume + 50, 3000)
-endparallel
-dispense_to("waste", 20, 5000)
+if(output.volume<20)
+	us("constant", 0, 0)
+	parallel
+		goto("waste")
+		aspirate(output.volume + 50, 4000)
+	endparallel
+	dispense_to("waste", 20, 5000)
+	wait(15)
+	dispense_to("chip", 5, 2000)
+	goto(output.well)
+else
+	if(output.volume<50)
+		us("constant", 0, 0)
+		parallel
+			goto(output.well)
+			aspirate(output.volume + 50, 4000)
+		endparallel
+		dispense_to("waste", 20, 5000)
+		wait(15)
+	else
+		parallel
+			goto(output.well)
+			aspirate(output.volume + 50, 4000)
+		endparallel
+		dispense_to("waste", 20, 5000)
+		us("constant", 0, 0)
+	endif
+endif
+
 set_status("Dispensing sample...")
 dispense_to("chip", output.volume, output.velocity)
 set_light(0, 255, 0, 1)
@@ -152,4 +175,5 @@ parallel
 endparallel
 set_status("Done!")
 add_process_after("post_sample_clean_pure.acoul")
+set_light(0)
 set_light(0)
