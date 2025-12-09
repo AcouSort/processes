@@ -10,7 +10,7 @@ int seed_volume = 95
 int voltage = 12
 int seedwash_volume = 150
 int syringe_wash = 500
-int seedwash_velocity = 300
+int seedwash_velocity = 200
 expose int loops = 1
 
 ########## INITIALIZE #########
@@ -102,10 +102,18 @@ if(sample.volume < 800)
 	repeat(loops)
 		dispense_to("waste", 10, 5000)
 		set_valve("chip")
-		dispense_to("chip", sample.volume, sample.velocity)
+		if(sample.velocity>50)
+			dramp(sample.volume, 50, sample.velocity, steps, 1, steps, "lin")
+		else
+			dispense(sample.volume, sample.velocity)
+		endif
 		aspirate_from("buffer", 10, 3000)
 		set_valve("chip")
-		aramp(sample.volume, 50, sample.velocity, steps, 1, steps, "lin")
+		if(sample.velocity>50)
+			aramp(sample.volume, 50, sample.velocity, steps, 1, steps, "lin")
+		else
+			aspirate(sample.volume, sample.velocity)
+		endif
 	end
 
 ############# SYRINGE WASH ################
@@ -175,5 +183,4 @@ parallel
 endparallel
 set_status("Done!")
 add_process_after("post_sample_clean_pure.acoul")
-set_light(0)
 set_light(0)
