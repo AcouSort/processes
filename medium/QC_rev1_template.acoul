@@ -1,4 +1,4 @@
-process_revision(1.2.0)
+process_revision(1.3.0)
 well sample(well = "A1", volume! = 100, velocity! = 50)
 well buffer(well = "B1", volume! = 60, velocity! = 50)
 well output(well = "C1", volume! = 250, velocity! = 2000)
@@ -31,60 +31,49 @@ set_light(0)
 
 if(flush)
 	########### PRIMING ############
-	show_message("Please fill well H12 with 70% Ethanol and press OK")
-	set_status("Moving to well...")
-	set_valve("waste")
+	set_status("Rinsing...")
+	set_valve("rl")
 	parallel
-		empty(7500)
-		goto("h12")
-	endparallel
-	aspirate_from("rl", 50, 3000)
-	set_status("Aspirating ethanol...")
-	aspirate_from("chip", 250, 400)
-
-	set_status("Moving to waste...")
-	set_valve("waste")
-	parallel
-		empty(7500)
+		aspirate(400, 4000)
 		goto("waste")
 	endparallel
-	set_status("Priming...")
-	aspirate_from("buffer", 200, 3000)
+	dispense_to("chip", 300, 2000)
 	empty_to("waste", 7500)
-	aspirate_from("buffer", 1000, 3000)
+	set_status("Priming...")
+	aspirate_from("buffer", 1000, 5000)
 	dispense_to("chip", 200, 3000)
 	empty_to("waste", 7500)
-	aspirate_from("buffer", 1000, 3000)
+	aspirate_from("buffer", 1000, 5000)
 	dispense_to("chip", 200, 3000)
 	empty_to("waste", 7500)
 	set_status("Resuspending seed particles...")
-	aspirate_from("buffer", 1000, 3000)
 	stir("on")
+	aspirate_from("buffer", 1000, 5000)
 	dispense_to("chip", 200, 3000)
-	us("track3", frequency, voltage)
+	empty_to("waste", 7500)
+	dispense_to("chip", 200, 3000)
 	empty_to("waste", 7500)
 	stir("off")
 else
-	
+	stir("on")	
 	set_valve("buffer")
 	parallel
 		aspirate(200, 3000)
 		goto("waste")
 	endparallel
 	set_status("Resuspending seed particles...")
-	stir("on")
 	dispense_to("chip", 200, 3000)
-	wait("10")
+	wait("5")
 	stir("off")
-	us("track3", frequency, voltage)
 end
 
 ########## SEED PARTICLE ASPIRATION ##########
 set_valve("buffer")
 parallel
 	goto("seed")
-	aspirate(50, 3000)
+	aspirate(50, 4000)
 endparallel
+us("track3", frequency, voltage)
 set_status("Aspirating seed particles...")
 set_light(255, 255, 255, 1)
 if(recording)
@@ -99,7 +88,7 @@ steps = diff/25
 set_status("Moving to waste...")
 set_valve("buffer")
 parallel
-	aspirate(50 + seedwash_volume, 3000)
+	aspirate(50 + seedwash_volume, 4000)
 	goto("waste")
 endparallel
 dispense_to("waste", 20, 5000)
@@ -141,7 +130,7 @@ parallel
 	empty(7500)
 	goto(buffer.well)
 endparallel
-aspirate_from("buffer", 50, 3000)
+aspirate_from("buffer", 50, 4000)
 set_status("Aspirating buffer...")
 set_valve("chip")
 if(buffer.velocity>50)
@@ -153,7 +142,7 @@ snapshot(experiment_name + "_sample_aspiration")
 
 ############# SYRINGE WASH ################
 set_status("Cleaning syringe...")
-aspirate_from("buffer", 1000, 3000)
+aspirate_from("buffer", 1000, 5000)
 empty_to("waste", 7500)
 
 ############### WASHING ##################
@@ -163,7 +152,7 @@ int steps = diff/25 + 1
 set_status("Moving to waste...")
 set_valve("buffer")
 parallel
-	aspirate(wash_volume + 50, 3000)
+	aspirate(wash_volume + 50, 4000)
 	goto("waste")
 endparallel
 dispense_to("waste", 20, 5000)
@@ -182,24 +171,33 @@ set_status("Moving to output well...")
 set_valve("buffer")
 parallel
 	goto(output.well)
-	aspirate(output.volume + 50, 3000)
+	aspirate(output.volume + 50, 4000)
 endparallel
 dispense_to("waste", 20, 5000)
 us("constant", 0, 0)
 set_status("Dispensing sample...")
 dispense_to("chip", output.volume, output.velocity)
 snapshot(experiment_name + "_after_dispense")
-set_light(0, 255, 0, 1)
+
 set_valve("waste")
-parallel
-	empty(7500)
-	goto("home")
-endparallel
-set_status("Done!")
-set_light(0)
 if(di_rinse)
-	aspirate_from("di", 200, 3500)
+	parallel
+		empty(7500)
+		goto("waste")
+	endparallel
+	aspirate_from("di", 200, 5000)
 	dispense_to("chip", 200, 3000)
-	aspirate_from("di", 200, 3500)
+	aspirate_from("di", 200, 5000)
 	dispense_to("chip", 200, 3000)
+	goto("home")
+else
+	parallel
+		empty(7500)
+		goto("home")
+	endparallel
 endif
+set_light(0)
+set_status("Done!")
+
+
+

@@ -1,4 +1,4 @@
-process_revision(1.2.0)
+process_revision(1.3.0)
 set_light(0)
 set_status("Emptying syringe...")
 empty_to("waste", 7500)

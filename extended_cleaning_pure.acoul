@@ -1,4 +1,4 @@
-process_revision(1.2.0)
+process_revision(1.3.0)
 set_light(0)
 show_message("NOTE: Clean all reservoir bottles and replace all liquids before pressing OK!")
 set_status("Emptying syringe...")
@@ -37,13 +37,13 @@ dispense_to("chip", 200, 3000)
 empty_to("waste", 7500)
 
 set_status("Priming...")
-aspirate_from("buffer", 1000, 3000)
+aspirate_from("buffer", 1000, 5000)
 dispense_to("chip", 200, 3000)
 empty_to("waste", 7500)
-aspirate_from("buffer", 1000, 3000)
+aspirate_from("buffer", 1000, 5000)
 dispense_to("chip", 200, 3000)
 empty_to("waste", 7500)
-aspirate_from("buffer", 1000, 3000)
+aspirate_from("buffer", 1000, 4000)
 dispense_to("chip", 200, 3000)
 set_valve("waste")
 set_status("Finishing...")
@@ -52,3 +52,4 @@ parallel
 	goto("home")
 endparallel
 set_status("Done!")
+

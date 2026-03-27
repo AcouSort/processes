@@ -1,14 +1,13 @@
-process_revision(1.2.0)
+process_revision(1.3.0)
 expose list<well> sample(well = "A1", volume = 100, velocity = 50)
 well buffer(well = "B1", volume! = 60, velocity = 50)
-well output(well = "C1", volume = 100, velocity = 2000)
+well output(well = "C1", volume = 50, velocity = 2000)
 expose int wash_volume = 300
 expose int wash_velocity = 100
 int frequency = 4280
 int seed_volume = 95
-expose int voltage = 12
+int voltage = 12
 int seedwash_volume = 150
-int syringe_wash = 500
 int seedwash_velocity = 300
 
 ########## INITIALIZE #########
@@ -27,10 +26,10 @@ set("required_time", time)
 set_status("Resuspending seed particles...")
 stir("on")
 wait(10)
+empty_to("waste", 7500)
 stir("off")
 us("track3", frequency, voltage)
 set_light(255, 255, 255, 1)
-empty_to("waste", 7500)
 set_valve("buffer")
 parallel
 	goto("seed")
@@ -46,7 +45,7 @@ steps = diff/25
 set_status("Moving to waste...")
 set_valve("buffer")
 parallel
-	aspirate(50 + seedwash_volume, 3000)
+	aspirate(50 + seedwash_volume, 4000)
 	goto("waste")
 endparallel
 dispense_to("waste", 20, 5000)
@@ -116,19 +115,19 @@ snapshot(experiment_name + "_sample_aspiration")
 
 set_status("Cleaning syringe...")
 empty_to("waste", 7500)
-aspirate_from("sl", syringe_wash, 4000)
+aspirate_from("sl", 500, 4000)
 empty_to("waste", 7500)
 aspirate_from("sl", 1000, 4000)
 empty_to("waste", 7500)
-aspirate_from("rl", syringe_wash, 4000)
+aspirate_from("rl", 500, 5000)
 empty_to("waste", 7500)
-aspirate_from("rl", 1000, 4000)
+aspirate_from("rl", 1000, 5000)
 empty_to("waste", 7500)
-aspirate_from("buffer", 1000, 3000)
+aspirate_from("buffer", 1000, 5000)
 empty_to("waste", 7500)
-aspirate_from("buffer", 1000, 3000)
+aspirate_from("buffer", 1000, 5000)
 empty_to("waste", 7500)
-aspirate_from("buffer", 1000, 3000)
+aspirate_from("buffer", 1000, 5000)
 empty_to("waste", 7500)
 
 ############### WASHING ##################
@@ -159,7 +158,7 @@ if(output.volume<20)
 	us("constant", 0, 0)
 	parallel
 		goto("waste")
-		aspirate(output.volume + 50, 3000)
+		aspirate(output.volume + 50, 4000)
 	endparallel
 	dispense_to("waste", 20, 5000)
 	wait(15)
@@ -170,17 +169,17 @@ else
 		us("constant", 0, 0)
 		parallel
 			goto(output.well)
-			aspirate(output.volume + 50, 3000)
+			aspirate(output.volume + 50, 4000)
 		endparallel
 		dispense_to("waste", 20, 5000)
 		wait(15)
 	else
+		us("constant", 0, 0)
 		parallel
 			goto(output.well)
-			aspirate(output.volume + 50, 3000)
+			aspirate(output.volume + 50, 4000)
 		endparallel
 		dispense_to("waste", 20, 5000)
-		us("constant", 0, 0)
 	endif
 endif
 
@@ -196,3 +195,4 @@ endparallel
 set_status("Done!")
 add_process_after("post_sample_clean_pure.acoul")
 set_light(0)
+

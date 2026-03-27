@@ -1,8 +1,8 @@
-process_revision(1.2.0)
-expose int frequency = 4280
+process_revision(1.3.0)
+expose int frequency = 4270
 expose int seed_volume = 55
 expose int voltage = 12
-int seedwash_volume = 65
+expose int seedwash_volume = 65
 int seedwash_velocity = 200
 expose bool flush = true
 expose bool recording = true
@@ -89,23 +89,32 @@ if(recording)
 	video_end()
 	wait(1)
 endif
-snapshot(experiment_name + "_12um")
+snapshot(experiment_name + "_after_wash")
 
 ############# DISPENSING SAMPLE ###############
 
 set_status("Moving to waste cup...")
 us("constant", 0, 0)
+
+set_valve("waste")
 if(di_rinse)
-	aspirate_from("di", 400, 3000)
-	set_status("Filling chip with Milli-Q...")
-	dispense_to("chip", 400, 3000)
+	parallel
+		empty(7500)
+		goto("waste")
+	endparallel
+	aspirate_from("di", 200, 3500)
+	dispense_to("chip", 200, 3000)
+	aspirate_from("di", 200, 3500)
+	dispense_to("chip", 200, 3000)
+	goto("home")
 else
-	aspirate_from("buffer", 400, 3000)
-	set_status("Cleaning chip with buffer...")
-	dispense_to("chip", 400, 3000)
+	parallel
+		empty(7500)
+		goto("home")
+	endparallel
 endif
-set_light(0, 255, 0, 1)
+
 snapshot(experiment_name + "_after_dispense")
-goto("home")
-set_status("Done! Report to intranet.")
 set_light(0)
+set_status("Done! Report to intranet.")
+

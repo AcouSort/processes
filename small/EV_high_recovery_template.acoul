@@ -1,15 +1,15 @@
-process_revision(1.2.0)
-well sample(well = "Tube1", volume = 50, velocity = 20)
-well buffer(well = "B1", volume! = 50, velocity = 20)
-well output(well = "C1", volume = 50, velocity = 1000)
-expose int wash_volume = 100
-expose int wash_velocity = 20
+process_revision(1.3.0)
+well sample(well = "Tube1", volume = 30, velocity = 15)
+well buffer(well = "B1", volume! = 30, velocity = 15)
+well output(well = "C1", volume = 20, velocity = 1000)
+expose int wash_volume = 60
+expose int wash_velocity = 15
 int frequency = 4150
-int seed_volume = 28
+int seed_volume = 25
 int voltage = 10
 int seedwash_volume = 40
 int seedwash_velocity = 60
-expose int enrichment_time = 3
+expose int loops = 1
 
 ########## INITIALIZE #########
 
@@ -52,7 +52,11 @@ snapshot(experiment_name + "_seed_particles")
 diff = sample.velocity - 20
 steps = diff/5
 set_status("Moving to sample well...")
-goto(sample.well)
+set_valve("buffer")
+parallel
+	goto(sample.well)
+	aspirate(20, 3000)
+endparallel
 set_status("Aspirating sample...")
 set_valve("chip")
 if(sample.velocity>20)
@@ -76,19 +80,19 @@ aspirate_from("buffer", 50, 3000)
 set_status("Aspirating buffer...")
 set_valve("chip")
 if(buffer.velocity>20)
-	aramp(30, 20, buffer.velocity, steps, 1, steps, "lin")
+	aramp(20, 20, buffer.velocity, steps, 1, steps, "lin")
 else
-	aspirate(30, buffer.velocity)
+	aspirate(20, buffer.velocity)
 endif
 snapshot(experiment_name + "_sample_aspiration")
 
 ############ HIGH RECOVERY ################
-
-repeat(enrichment_time)
+goto(sample.well)
+repeat(loops)
 	dispense_to("waste", 20, 5000)
-	dispense_to("chip", 10, 20)
+	dispense_to("chip", 20, 15)
 	aspirate_from("buffer", 20, 3000)
-	aspirate_from("chip", 10, 20)
+	aspirate_from("chip", 20, 15)
 end
 
 ############# SYRINGE WASH ################
@@ -129,7 +133,7 @@ if(output.volume<50)
 		aspirate(output.volume + 50, 3000)
 	endparallel
 	dispense_to("waste", 20, 5000)
-	wait(15)
+	wait(30)
 else
 	parallel
 		goto(output.well)
