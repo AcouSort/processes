@@ -1,4 +1,4 @@
-process_revision(1.2.0)
+process_revision(1.3.0)
 expose int frequency = 4150
 expose int seed_volume = 28
 expose int seed_velocity = 50
